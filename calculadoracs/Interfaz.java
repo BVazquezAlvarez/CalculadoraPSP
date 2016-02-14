@@ -15,6 +15,8 @@ import java.util.logging.Logger;
  */
 public class Interfaz extends javax.swing.JFrame {
 
+    int fioID = 0;
+
     /**
      * Creates new form Interfaz
      */
@@ -38,7 +40,6 @@ public class Interfaz extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         op2 = new javax.swing.JTextField();
         result = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
         enviar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -55,8 +56,6 @@ public class Interfaz extends javax.swing.JFrame {
 
         jLabel2.setText("2º Operando");
 
-        jLabel4.setText("Resultado");
-
         enviar.setText("Enviar");
         enviar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -70,14 +69,14 @@ public class Interfaz extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(36, 36, 36)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(26, 26, 26)
-                        .addComponent(op1, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(enviar))
+                .addComponent(jLabel1)
+                .addGap(26, 26, 26)
+                .addComponent(op1, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(enviar)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
@@ -86,14 +85,11 @@ public class Interfaz extends javax.swing.JFrame {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(18, 18, 18)
                                 .addComponent(operandos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
                                 .addComponent(jLabel2)
                                 .addGap(18, 18, 18)))
                         .addComponent(op2, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(40, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addContainerGap(39, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -106,9 +102,7 @@ public class Interfaz extends javax.swing.JFrame {
                     .addComponent(jLabel2)
                     .addComponent(op2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(enviar))
+                .addComponent(enviar)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(result)
                 .addGap(25, 25, 25))
@@ -138,23 +132,18 @@ public class Interfaz extends javax.swing.JFrame {
     }//GEN-LAST:event_op1ActionPerformed
 
     private void enviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enviarActionPerformed
-       Cliente cli =new Cliente(Integer.parseInt(op1.getText()), Integer.parseInt(op2.getText()),operandos.getSelectedIndex());
-       
-       Servidor ser=new Servidor();
-       
+        //Cuando se da a enviar lo que hace es crear el objeto cliente, dar una nueva yid y dársela al objeto hilo
+        Cliente cli = new Cliente(Integer.parseInt(op1.getText()), Integer.parseInt(op2.getText()), operandos.getSelectedIndex());
+
+        fioID++;
+        Hilo hilo = new Hilo(fioID);
+
         try {
-            ser.conexion();
+        //Da comienzo el hilo del servidor y el cliente
+            hilo.start();
             cli.conexion();
-          
             cli.enviar();
-              ser.receptor();
-            
-            
-            int ans=0;
-            ans=ser.getAns();
-            result.setText(Integer.toString(ans));
-            
-         } catch (IOException ex) {
+        } catch (IOException ex) {
             Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_enviarActionPerformed
@@ -198,7 +187,6 @@ public class Interfaz extends javax.swing.JFrame {
     private javax.swing.JButton enviar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JTextField op1;
     private javax.swing.JTextField op2;

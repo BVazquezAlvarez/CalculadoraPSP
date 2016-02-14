@@ -23,7 +23,6 @@ public class Cliente {
     int parametro1;
     int parametro2;
     int operando;
-    InputStream is ;
     OutputStream os;
     Socket clienteSocket = new Socket();
 
@@ -36,22 +35,21 @@ public class Cliente {
         this.operando = operando;
     }
 
-    
-    public void conexion() throws IOException{
+    //Crea el socket y los outputs para enviar
+    public void conexion() throws IOException {
 
-        System.out.println("Estableciendo la conexi�n");
+        System.out.println("Estableciendo la conexion");
         InetSocketAddress addr = new InetSocketAddress("localhost", 5555);
         clienteSocket.connect(addr);
 
-        is = clienteSocket.getInputStream();
         os = clienteSocket.getOutputStream();
     }
+
     public void enviar() throws IOException {
-        
-        
+
+        //Envia los parametros que se hayan escrito en la interfaz
         os.write(parametro1);
-        os.write(parametro2);   
+        os.write(parametro2);
         os.write(operando);
-        clienteSocket.close();
     }
 }

@@ -11,6 +11,8 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -20,15 +22,11 @@ public class Servidor {
 
     int ans;
     InputStream is;
-    OutputStream os;
     Socket newSocket;
     ServerSocket serverSocket;
-    
-    public Servidor() {
-    }
 
-    public Servidor(int ans) {
-        this.ans = ans;
+    public Servidor() {
+
     }
 
     public int getAns() {
@@ -38,10 +36,9 @@ public class Servidor {
     public void setAns(int ans) {
         this.ans = ans;
     }
-
-    
-      public void conexion() throws IOException{
-          System.out.println("Creando socket servidor");
+    //Hace lo mismo que el cliente
+    public void conexion() throws IOException {
+        System.out.println("Creando socket servidor");
 
         serverSocket = new ServerSocket();
 
@@ -50,43 +47,44 @@ public class Servidor {
         InetSocketAddress addr = new InetSocketAddress("localhost", 5555);
         serverSocket.bind(addr);
 
-        
-      }
+    }
+//Método para poder recibir conexiones e intentarà hacer la operación
     public void receptor() throws IOException {
-
-        
-System.out.println("Aceptando conexiones");
-
+        System.out.println("Aceptando conexiones");
         newSocket = serverSocket.accept();
 
-        System.out.println("Conexi�n recibida");
+        System.out.println("Conexion recibida");
+//Lee lo que le envió el cliente
+        try {
+            is = newSocket.getInputStream();
+            int parametro1 = (is.read());
+            int parametro2 = (is.read());
+            int operacion = (is.read());
+//Hace las cuentas
+            if (operacion == 0) {
+                ans = parametro1 + parametro2;
+            } else if (operacion == 1) {
+                ans = parametro1 - parametro2;
 
-       is = newSocket.getInputStream();
-        os = newSocket.getOutputStream();
-        byte[] mensaje = new byte[25];
-        int parametro1 = (is.read());
-        int parametro2 = (is.read());
-        int operacion = (is.read());
+            } else if (operacion == 2) {
+                ans = parametro1 * parametro2;
 
-        if (operacion == 0) {
-            ans = parametro1 + parametro2;
-        } else if (operacion == 1) {
-            ans = parametro1 - parametro2;
+            } else if (operacion == 3) {
+                ans = parametro1 / parametro2;
 
-        } else if (operacion == 2) {
-            ans = parametro1 * parametro2;
+            }
 
-        } else if (operacion == 3) {
-            ans = parametro1 / parametro2;
+            newSocket.close();
 
+            System.out.println("Cerrando el socket servidor");
+
+            serverSocket.close();
+
+            System.out.println("Terminado");
+        } catch (IOException ex) {
+            Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        newSocket.close();
-
-        System.out.println("Cerrando el socket servidor");
-
-        serverSocket.close();
-
-        System.out.println("Terminado");
     }
+
 }
